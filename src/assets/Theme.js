@@ -1,8 +1,11 @@
 //use the following file to define your colors, breakpoints, and your Theme in general across the project
 
 export const Colors = {
-    Primary: "#FF4B69",
-    Secondary: "#1D3557",
+    Primary: "#FF164E",
+    Secondary: "#F4F4F4",
+    CardBackground: "#FFF",
+    Gray: "#868687",
+    GrayBoarder: "#E7E7E8",
   };
   
   const BreakPoints = {
