@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Colors } from "./assets/Theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavMenu from "./assets/components/NavMenu";
+import HomePage from "./assets/components/HomePage";
 
 const AppEl = styled.div`
   display: flex;
@@ -28,7 +29,7 @@ function App() {
           <Routes>
             <Route excat path="/store" element={<div>Store</div>}/>
             <Route excat path="/product" element={<div>Product</div>}/>
-            <Route excat path="/" element={<div>Home</div>}/>
+            <Route excat path="/" element={<HomePage />}/>
           </Routes>
         </Pages>
         <NavMenu />

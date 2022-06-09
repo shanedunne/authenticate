@@ -37,6 +37,7 @@ const Link=styled.a`
         margin-left: 50%;
         transform: translateX(-50%);
         background-color: ${Colors.Primary};
+    
 
     }
 
@@ -49,7 +50,7 @@ export default function NavMenu(){
     <NavMenuEl>
             <Link onClick={()=>{
                 nav('/')
-            }} active={pathname==='/'}>
+            }} active={pathname==='/b'}>
                 <FiHome />
             </Link>
             <Link onClick={()=>{

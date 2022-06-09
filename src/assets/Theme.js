@@ -2,7 +2,7 @@
 
 export const Colors = {
     Primary: "#96be25",
-    Secondary: "#F4F4F4",
+    Background: "#F4F4F4",
     CardBackground: "#FFF",
     Gray: "#868687",
     GrayBoarder: "#E7E7E8",
