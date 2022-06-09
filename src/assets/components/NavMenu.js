@@ -43,16 +43,25 @@ const Link=styled.a`
 `;
 
 export default function NavMenu(){
-    return <NavMenuEl>
-            <Link active>
+    const nav=useNavigate();
+    const {pathname}=useLocation();
+    return (
+    <NavMenuEl>
+            <Link onClick={()=>{
+                nav('/')
+            }} active={pathname==='/'}>
                 <FiHome />
             </Link>
-            <Link>
+            <Link onClick={()=>{
+                nav('/store')
+                
+            }} active={pathname==='/store'}>
                 <BiStore />
             </Link>
             <Link>
                 <AiOutlineUser />
             </Link>
           </NavMenuEl>
+    )
 }
 
