@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { Colors } from "./assets/Theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import NavMenu from "./assets/components/NavMenu";
 
 const AppEl = styled.div`
   display: flex;
@@ -30,6 +31,7 @@ function App() {
             <Route excat path="/" element={<div>Home</div>}/>
           </Routes>
         </Pages>
+        <NavMenu />
       </AppEl>
     </Router>
   );
