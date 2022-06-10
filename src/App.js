@@ -3,6 +3,7 @@ import { Colors } from "./assets/Theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavMenu from "./assets/components/NavMenu";
 import HomePage from "./assets/components/HomePage";
+import VendorPage from "./assets/components/VendorPage";
 
 const AppEl = styled.div`
   display: flex;
@@ -27,7 +28,7 @@ function App() {
       <AppEl>
         <Pages>
           <Routes>
-            <Route excat path="/store" element={<div>Store</div>}/>
+            <Route excat path="/store" element={<VendorPage />}/>
             <Route excat path="/product" element={<div>Product</div>}/>
             <Route excat path="/" element={<HomePage />}/>
           </Routes>
