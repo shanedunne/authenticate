@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { Colors } from "../Theme";
+import BidList from "./BidList";
 import FeaturedTab from "./FeaturedTab";
 import SearchBar from "./styled/SearchBar.styled";
 import Tabs from "./styled/Tabs.styled";
@@ -39,6 +40,7 @@ export default function HomePage() {
             <Title>Authentic</Title>
             <SearchBar />
             <Tabs tabs={tabs}/>
+            <BidList />
         </HomePageEl>
     )
 }
