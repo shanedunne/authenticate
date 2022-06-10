@@ -1,6 +1,14 @@
 import styled from "styled-components";
 import { Colors } from "../Theme";
 import SearchBar from "./styled/SearchBar.styled";
+import Tabs from "./styled/Tabs.styled";
+
+const tabs = [
+    {id: 1, title:'Featured', content:<div>Tab 1</div>},
+    {id: 2, title:'Collections', content:<div>Tab 2</div>},
+    {id: 3, title:'Artist', content:<div>Tab 3</div>},
+    {id: 4, title:'Tag', content:<div>Tab 4</div>}
+]
 
 const HomePageEl=styled.div`
     background-color: ${Colors.Background};
@@ -29,6 +37,7 @@ export default function HomePage() {
         <HomePageEl>
             <Title>Authentic</Title>
             <SearchBar />
+            <Tabs tabs={tabs}/>
         </HomePageEl>
     )
 }
