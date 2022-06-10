@@ -7,6 +7,13 @@ import Tabs from "./styled/Tabs.styled";
 import Img from "./styled/Img.styled";
 import { useNavigate } from "react-router-dom";
 import ShopImage from '../../assets/images/shopImage2.png'
+import VendorHeader from './VenderHeader';
+
+const tabs = [
+    {id: 1, title: 'Current', content: 'Current Collection'},
+    {id: 2, title: 'Past', content: 'Past Collections'},
+    {id: 3, title: 'About', content: 'About'}
+]
 
 const VendorPageEl = styled.div`
     background-color: ${Colors.Background};
@@ -42,6 +49,8 @@ export default function VendorPage(){
                     <BsThreeDots />
                 </span>
             </TopMenu>
+            <VendorHeader />
+            <Tabs tabs={tabs} />
         </VendorPageEl>
     )
 }
