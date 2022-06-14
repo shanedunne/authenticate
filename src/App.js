@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavMenu from "./assets/components/NavMenu";
 import HomePage from "./assets/components/HomePage";
 import VendorPage from "./assets/components/VendorPage";
+import Product from "./assets/components/Product";
 
 const AppEl = styled.div`
   display: flex;
@@ -29,7 +30,7 @@ function App() {
         <Pages>
           <Routes>
             <Route excat path="/vendor" element={<VendorPage />}/>
-            <Route excat path="/product" element={<div>Product</div>}/>
+            <Route excat path="/product" element={<Product />}/>
             <Route excat path="/" element={<HomePage />}/>
           </Routes>
         </Pages>

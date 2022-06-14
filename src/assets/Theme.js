@@ -1,5 +1,3 @@
-//use the following file to define your colors, breakpoints, and your Theme in general across the project
-
 export const Colors = {
     Primary: "#96be25",
     Background: "#F4F4F4",

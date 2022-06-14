@@ -56,7 +56,7 @@ export default function NavMenu(){
             <Link onClick={()=>{
                 nav('/store')
                 
-            }} active={pathname==='/store'}>
+            }} active={pathname ==='/vendor' || pathname === '/product'}>
                 <BiStore />
             </Link>
             <Link>
