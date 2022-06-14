@@ -10,7 +10,7 @@ import ShopImage from '../../assets/images/shopImage2.png'
 import VendorHeader from './VenderHeader';
 
 const tabs = [
-    {id: 1, title: 'Current', content: 'Current Collection'},
+    {id: 1, title: 'Current', content: <Img src={ShopImage} />},
     {id: 2, title: 'Past', content: 'Past Collections'},
     {id: 3, title: 'About', content: 'About'}
 ]
@@ -35,6 +35,7 @@ const TopMenu = styled.div`
     font-size: 1.5rem;
 
 `;
+
 
 export default function VendorPage(){
     const nav = useNavigate();

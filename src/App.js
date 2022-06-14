@@ -28,7 +28,7 @@ function App() {
       <AppEl>
         <Pages>
           <Routes>
-            <Route excat path="/store" element={<VendorPage />}/>
+            <Route excat path="/vendor" element={<VendorPage />}/>
             <Route excat path="/product" element={<div>Product</div>}/>
             <Route excat path="/" element={<HomePage />}/>
           </Routes>
