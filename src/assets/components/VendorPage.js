@@ -8,25 +8,15 @@ import Img from "./styled/Img.styled";
 import { useNavigate } from "react-router-dom";
 import ShopImage from '../../assets/images/shopImage2.png'
 import VendorHeader from './VenderHeader';
+import PageContainer from "./styled/PageContainer.styled";
 
 const tabs = [
-    {id: 1, title: 'Current', content: <Img src={ShopImage} />},
+    {id: 1, title: 'Current', content: <Img src={ShopImage} width="100%" />},
     {id: 2, title: 'Past', content: 'Past Collections'},
     {id: 3, title: 'About', content: 'About'}
 ]
 
-const VendorPageEl = styled.div`
-    background-color: ${Colors.Background};
-    flex: 1;
-    padding-bottom: 10vh;
-    overflow: auto;
-    overflow-x: hidden;
-    min-height: min-content;
-    padding-top: 1rem;
-    ::-webkit-scrollbar {
-        display: none;
-    }
-`;
+
 const TopMenu = styled.div`
     display: flex;
     justify-content: space-between;
@@ -40,7 +30,7 @@ const TopMenu = styled.div`
 export default function VendorPage(){
     const nav = useNavigate();
     return (
-        <VendorPageEl>
+        <PageContainer>
             <TopMenu>
                 <FiArrowLeft onClick={() => {
                     nav(-1);
@@ -52,6 +42,6 @@ export default function VendorPage(){
             </TopMenu>
             <VendorHeader />
             <Tabs tabs={tabs} />
-        </VendorPageEl>
+        </PageContainer>
     )
 }
