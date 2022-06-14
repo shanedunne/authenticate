@@ -7,7 +7,7 @@ import Tabs from "./styled/Tabs.styled";
 import Img from "./styled/Img.styled";
 import { useNavigate } from "react-router-dom";
 import ShopImage from '../../assets/images/shopImage2.png'
-import VendorHeader from './VenderHeader';
+import VendorHeader from './VendorHeader';
 import PageContainer from "./styled/PageContainer.styled";
 
 const tabs = [

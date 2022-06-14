@@ -5,6 +5,7 @@ import NavMenu from "./assets/components/NavMenu";
 import HomePage from "./assets/components/HomePage";
 import VendorPage from "./assets/components/VendorPage";
 import Product from "./assets/components/Product";
+import WalletHeader from "./assets/components/WalletHeader";
 
 const AppEl = styled.div`
   display: flex;
@@ -27,6 +28,7 @@ function App() {
   return (
     <Router>
       <AppEl>
+        <WalletHeader />
         <Pages>
           <Routes>
             <Route excat path="/vendor" element={<VendorPage />}/>

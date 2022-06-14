@@ -11,7 +11,7 @@ const VenderHeaderEl = styled.section`
     row-gap: 1rem;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 1,5rem;
+    margin-bottom: 1.5rem;
 `;
 const Name = styled.span`
     font-weight: 500;
