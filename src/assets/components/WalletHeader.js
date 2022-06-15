@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Button from "./styled/Button.styled";
 import { BiWalletAlt } from "react-icons/bi";
 import { SiEthereum } from "react-icons/si"
+import { BsPerson } from "react-icons/bs";
 import { Colors } from "../Theme";
 
 const Title=styled.h1`
@@ -11,7 +12,6 @@ const Title=styled.h1`
     font-weight: normal;
     font-size: 1.5rem;
     text-align: center;
-    margin-bottom: 2rem;
     justify-content: center;
     `;
 
@@ -24,6 +24,7 @@ const WalletContainer = styled.div`
     justify-content: space-between;
     padding: 0 1rem;
     align-items: center;
+    vertical-align: middle;
 `;
 const WalletIconContainer = styled.span``;
 const BalanceInfoContainer = styled.div`
@@ -107,8 +108,10 @@ export default function WalletHeader() {
         <BalanceInfoContainer>
           <HeaderAddress></HeaderAddress>
           <HeaderBalance>1.34</HeaderBalance>
-          <SiEthereum />
+          <SiEthereum style={{marginRight: '1.5rem', verticalAlign: 'middle'}}/>
+          <BsPerson style={{verticalAlign: 'middle'}}/>
         </BalanceInfoContainer>
+        
       </WalletContainer>
     );
   } else {
@@ -116,7 +119,11 @@ export default function WalletHeader() {
 
       <WalletContainer>
         <Title>Authentic</Title>
-        <BiWalletAlt onClick={handleLinkWallet} style={{justifyContent: 'center', cursor: 'pointer'}}/>
+        <Button onClick={handleLinkWallet} style={{justifyContent: 'center', cursor: 'pointer'}}>
+            Connect
+        <BiWalletAlt />
+        </Button>
+        
       </WalletContainer>
     );
   }
