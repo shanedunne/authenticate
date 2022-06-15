@@ -28,10 +28,9 @@ const WalletContainer = styled.div`
 `;
 const WalletIconContainer = styled.span``;
 const BalanceInfoContainer = styled.div`
-    background-color: ${Colors.CardBackground};
     border-radius: 12%;
     padding: 0.4rem;
-    font-size: 1.3rem;
+    font-size: 1rem;
 `;
 
 const HeaderAddress = styled.span`
@@ -84,6 +83,7 @@ export default function WalletHeader() {
 
   // declare balance and address shortened variables globally
   var balanceRounded;
+  balanceRounded = JSON.stringify(balance)
 
   async function getUserDetails() {
     //this function uses provider rather than theProvider, because handleLinkWallet has just set provider, but unless we use promises theProvider won't have been set yet
@@ -99,14 +99,17 @@ export default function WalletHeader() {
         const balanceInEth = ethers.utils.formatEther(balance)
         setBalance(balance)
         })
+    
   }
+  console.log(balanceRounded)
+  let addressShort = address.slice(0, 7)
 
   if (address) {
     return (
       <WalletContainer>
         <Title>Authentic</Title>
         <BalanceInfoContainer>
-          <HeaderAddress></HeaderAddress>
+          <HeaderAddress>{addressShort}</HeaderAddress>
           <HeaderBalance>1.34</HeaderBalance>
           <SiEthereum style={{marginRight: '1.5rem', verticalAlign: 'middle'}}/>
           <BsPerson style={{verticalAlign: 'middle'}}/>

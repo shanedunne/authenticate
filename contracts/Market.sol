@@ -17,7 +17,16 @@ contract NftMarketplace is ReentrancyGuard {
     struct Listing {
         uint256 price;
         address seller;
+        bool isPhysicalItem;
     }
+
+    // Escrow configuratio
+
+    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE }
+    
+    State public currState;
+
+    mapping(address mapping(Listing => uint256)) private escrowDebt;
 
     // Events
 
@@ -118,11 +127,21 @@ contract NftMarketplace is ReentrancyGuard {
         if (msg.value < listedItem.price) {
             revert PriceNotMet(nftAddress, tokenId, listedItem.price);
         }
+        if (Listing.isPhysicalItem === true) {
+            IERC721 nft = IERC721(nftAddress);
+            address owner = ownerOf(tokenId)
 
-        s_proceeds[listedItem.seller] += msg.value;
+            require(currState == State.AWAITING_PAYMENT, "Already paid");
+            currState = State.AWAITING_DELIVERY;
+            escrowDebt[owner][Listing] = msg.value;
+        } else {
+            s_proceeds[listedItem.seller] += msg.value;
         delete (s_listings[nftAddress][tokenId]);
         IERC721(nftAddress).safeTransferFrom(listedItem.seller, msg.sender, tokenId);
         emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
+        }
+
+        
     }
 
     function updateListing(
