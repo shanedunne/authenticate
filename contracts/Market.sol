@@ -3,6 +3,7 @@ pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 error PriceNotMet(address nftAddress, uint256 tokenId, uint256 price);
 error ItemNotForSale(address nftAddress, uint256 tokenId);
@@ -13,20 +14,27 @@ error NotOwner();
 error NotApprovedForMarketplace();
 error PriceMustBeAboveZero();
 
-contract NftMarketplace is ReentrancyGuard {
+contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
     struct Listing {
         uint256 price;
         address seller;
         bool isPhysicalItem;
     }
 
+    struct escrowRecords {
+        address nftAddress;
+        uint256 tokenId;
+        address purchaser;
+        uint256 price;
+    }
+
     // Escrow configuratio
 
-    enum State { AWAITING_PAYMENT, AWAITING_DELIVERY, COMPLETE }
+    enum State { AWAITING_PURCHASER, AWAITING_DELIVERY, COMPLETE }
     
     State public currState;
 
-    mapping(address mapping(Listing => uint256)) private escrowDebt;
+    mapping(address mapping(uint256 => struct)) private escrowDebt;
 
     // Events
 
@@ -105,6 +113,7 @@ contract NftMarketplace is ReentrancyGuard {
             revert NotApprovedForMarketplace();
         }
         s_listings[nftAddress][tokenId] = Listing(price, msg.sender);
+        currState = State.AWAITING_PURCHASER;
         emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
 
@@ -117,32 +126,36 @@ contract NftMarketplace is ReentrancyGuard {
         emit ItemCanceled(msg.sender, nftAddress, tokenId);
     }
 
-    function buyItem(address nftAddress, uint256 tokenId)
+    function buyItem(address _nftAddress, uint256 _tokenId, address _owner)
         external
         payable
-        isListed(nftAddress, tokenId)
+        isListed(_nftAddress, _tokenId)
         nonReentrant
     {
-        Listing memory listedItem = s_listings[nftAddress][tokenId];
+        Listing memory listedItem = s_listings[_nftAddress][_tokenId];
         if (msg.value < listedItem.price) {
-            revert PriceNotMet(nftAddress, tokenId, listedItem.price);
+            revert PriceNotMet(_nftAddress, _tokenId, listedItem.price);
         }
         if (Listing.isPhysicalItem === true) {
-            IERC721 nft = IERC721(nftAddress);
-            address owner = ownerOf(tokenId)
+            IERC721 nft = IERC721(_nftAddress);
 
-            require(currState == State.AWAITING_PAYMENT, "Already paid");
+            require(currState == State.AWAITING_PURCHASER, "Already paid");
             currState = State.AWAITING_DELIVERY;
-            escrowDebt[owner][Listing] = msg.value;
+
+            escrowDebt[_owner][_tokenId] = escrowRecords(_nftAddress, _tokenId, msg.sender, msg.value);
+
+            address(this) =+ msg.value;
+            IERC721(nftAddress).safeTransferFrom(listedItem.seller, address(this), _tokenId);
         } else {
             s_proceeds[listedItem.seller] += msg.value;
-        delete (s_listings[nftAddress][tokenId]);
-        IERC721(nftAddress).safeTransferFrom(listedItem.seller, msg.sender, tokenId);
-        emit ItemBought(msg.sender, nftAddress, tokenId, listedItem.price);
+            delete (s_listings[_nftAddress][_tokenId]);
+            IERC721(_nftAddress).safeTransferFrom(listedItem.seller, msg.sender, _tokenId);
+            emit ItemBought(msg.sender, _nftAddress, _tokenId, listedItem.price);
         }
 
         
     }
+
 
     function updateListing(
         address nftAddress,
