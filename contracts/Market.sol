@@ -126,6 +126,15 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         emit ItemCanceled(msg.sender, nftAddress, tokenId);
     }
 
+    // function required to send ERC721 to this smart contract
+
+    function onERC721Received( address operator, address from, uint256 tokenId, bytes calldata data ) 
+    public
+    override 
+    returns (bytes4) {
+            return this.onERC721Received.selector;
+        }
+
     function buyItem(address _nftAddress, uint256 _tokenId, address _owner)
         external
         payable
