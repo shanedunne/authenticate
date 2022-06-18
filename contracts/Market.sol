@@ -30,6 +30,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         address nftAddress;
         uint256 tokenId;
         address purchaser;
+        address seller;
         uint256 price;
     }
 
@@ -153,7 +154,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         external
         payable
         isListed(_nftAddress, _tokenId)
-        isReserved(nftAddress, tokenId)
+        isReserved(_nftAddress, _tokenId)
         nonReentrant
     {
         Listing memory listedItem = s_listings[_nftAddress][_tokenId];
@@ -164,8 +165,9 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
             IERC721 nft = IERC721(_nftAddress);
 
             listedItem.currStatus = State.AWAITING_DELIVERY;
+            _seller = listedItem.seller;
 
-            escrowDebt[_owner][_tokenId] = escrowRecords(_nftAddress, _tokenId, msg.sender, msg.value);
+            escrowDebt[_owner][_tokenId] = escrowRecords(_nftAddress, _tokenId, msg.sender, _seller, msg.value);
 
             address(this) =+ msg.value;
             IERC721(nftAddress).safeTransferFrom(listedItem.seller, address(this), _tokenId);
@@ -177,6 +179,22 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         }
 
         
+    }
+
+    function confirmDelivery(address _nftAddress, uint256 _tokenId) 
+        external
+        isListed(_nftAddress, _tokenId)
+        isReserved(_nftAddress, _tokenId)
+        nonReentrant
+    {
+        escrowRecords memory escrowItem = escrowDebt[_nftAddress][_tokenId];
+        require(msg.sender == escrowItem.purchaser);
+        s_proceeds[escrowItem.seller] += escrowItem.price;
+        delete (s_listings[_nftAddress][_tokenId]);
+        IERC721(nftAddress).safeTransferFrom(address(this), escrowItem.purchaser, _tokenId);
+        emit ItemBought(escrowItem.purchaser, _nftAddress, _tokenId, escrowItem.price);
+        delete (escrowDebt[_nftAddress][_tokenId])
+
     }
 
 
