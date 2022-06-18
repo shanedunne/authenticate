@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 error PriceNotMet(address nftAddress, uint256 tokenId, uint256 price);
 error ItemNotForSale(address nftAddress, uint256 tokenId);
 error NotListed(address nftAddress, uint256 tokenId);
-error Reserved(address nftAddress, uint256 tokenId)
+error Reserved(address nftAddress, uint256 tokenId);
 error AlreadyListed(address nftAddress, uint256 tokenId);
 error NoProceeds();
 error NotOwner();
@@ -23,7 +23,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         uint256 price;
         address seller;
         bool isPhysicalItem;
-        Status public currStatus;
+        Status currStatus;
     }
 
     struct escrowRecords {
@@ -38,7 +38,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
 
     
 
-    mapping(address mapping(uint256 => struct)) private escrowDebt;
+    mapping(address => mapping(uint256 => escrowRecords)) private escrowDebt;
 
     // Events
 
@@ -101,10 +101,11 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
     }
 
     modifier isReserved(address nftAddress, uint256 tokenId) {
-        Listed memory listing = s_listings[nftAddress][tokenId];
+        Listing memory listing = s_listings[nftAddress][tokenId];
         if (listing.currStatus != Status.AWAITING_PURCHASER) {
-            revert Reserved(nftAddress, tokenID)
+            revert Reserved(nftAddress, tokenId);
         }
+        _;
     }
 
     // main functions
@@ -126,7 +127,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         if (nft.getApproved(tokenId) != address(this)) {
             revert NotApprovedForMarketplace();
         }
-        s_listings[nftAddress][tokenId] = Listing(price, msg.sender, _isPhysicalItem, State.AWAITING_PURCHASER);
+        s_listings[nftAddress][tokenId] = Listing(price, msg.sender, _isPhysicalItem, Status.AWAITING_PURCHASER);
         emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
 
@@ -164,13 +165,13 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         if (listedItem.isPhysicalItem == true) {
             IERC721 nft = IERC721(_nftAddress);
 
-            listedItem.currStatus = State.AWAITING_DELIVERY;
-            _seller = listedItem.seller;
+            listedItem.currStatus = Status.AWAITING_DELIVERY;
+            address _seller = listedItem.seller;
 
             escrowDebt[_owner][_tokenId] = escrowRecords(_nftAddress, _tokenId, msg.sender, _seller, msg.value);
-
-            address(this) =+ msg.value;
-            IERC721(nftAddress).safeTransferFrom(listedItem.seller, address(this), _tokenId);
+            // as function is set payable i should not need the below line
+            // address(this) += msg.value;
+            IERC721(_nftAddress).safeTransferFrom(listedItem.seller, address(this), _tokenId);
         } else {
             s_proceeds[listedItem.seller] += msg.value;
             delete (s_listings[_nftAddress][_tokenId]);
@@ -193,7 +194,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         delete (s_listings[_nftAddress][_tokenId]);
         IERC721(nftAddress).safeTransferFrom(address(this), escrowItem.purchaser, _tokenId);
         emit ItemBought(escrowItem.purchaser, _nftAddress, _tokenId, escrowItem.price);
-        delete (escrowDebt[_nftAddress][_tokenId])
+        delete (escrowDebt[_nftAddress][_tokenId]);
 
     }
 
