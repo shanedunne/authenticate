@@ -192,7 +192,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         require(msg.sender == escrowItem.purchaser);
         s_proceeds[escrowItem.seller] += escrowItem.price;
         delete (s_listings[_nftAddress][_tokenId]);
-        IERC721(nftAddress).safeTransferFrom(address(this), escrowItem.purchaser, _tokenId);
+        IERC721(_nftAddress).safeTransferFrom(address(this), escrowItem.purchaser, _tokenId);
         emit ItemBought(escrowItem.purchaser, _nftAddress, _tokenId, escrowItem.price);
         delete (escrowDebt[_nftAddress][_tokenId]);
 
