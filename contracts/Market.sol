@@ -100,14 +100,6 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         _;
     }
 
-    modifier isReserved(address nftAddress, uint256 tokenId) {
-        Listing memory listing = s_listings[nftAddress][tokenId];
-        if (listing.currStatus != Status.AWAITING_PURCHASER) {
-            revert Reserved(nftAddress, tokenId);
-        }
-        _;
-    }
-
     // main functions
 
     function listItem(
@@ -135,8 +127,9 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         external
         isOwner(nftAddress, tokenId, msg.sender)
         isListed(nftAddress, tokenId)
-        isReserved(nftAddress, tokenId)
     {
+        Listing memory listing = s_listings[nftAddress][tokenId];
+        require(listing.currStatus == Status.AWAITING_PURCHASER);
 
         delete (s_listings[nftAddress][tokenId]);
         emit ItemCanceled(msg.sender, nftAddress, tokenId);
@@ -155,10 +148,11 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         external
         payable
         isListed(_nftAddress, _tokenId)
-        isReserved(_nftAddress, _tokenId)
         nonReentrant
     {
         Listing memory listedItem = s_listings[_nftAddress][_tokenId];
+        require(listedItem.currStatus == Status.AWAITING_PURCHASER);
+
         if (msg.value < listedItem.price) {
             revert PriceNotMet(_nftAddress, _tokenId, listedItem.price);
         }
@@ -185,9 +179,11 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
     function confirmDelivery(address _nftAddress, uint256 _tokenId) 
         external
         isListed(_nftAddress, _tokenId)
-        isReserved(_nftAddress, _tokenId)
         nonReentrant
     {
+        Listing memory listing = s_listings[_nftAddress][_tokenId];
+        require(listing.currStatus == Status.AWAITING_PURCHASER);
+
         escrowRecords memory escrowItem = escrowDebt[_nftAddress][_tokenId];
         require(msg.sender == escrowItem.purchaser);
         s_proceeds[escrowItem.seller] += escrowItem.price;
@@ -208,8 +204,10 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         isListed(nftAddress, tokenId)
         nonReentrant
         isOwner(nftAddress, tokenId, msg.sender)
-        isReserved(nftAddress, tokenId)
     {
+        Listing memory listing = s_listings[nftAddress][tokenId];
+        require(listing.currStatus == Status.AWAITING_PURCHASER);
+
         if (newPrice == 0) {
             revert PriceMustBeAboveZero();
         }
