@@ -108,10 +108,13 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         if (price <= 0) {
             revert PriceMustBeAboveZero();
         }
-        IERC721 nft = IERC721(nftAddress);
-        if (nft.getApproved(tokenId) != address(this)) {
-            revert NotApprovedForMarketplace();
+        {
+            IERC721 nft = IERC721(nftAddress);
+            if (nft.getApproved(tokenId) != address(this)) {
+                revert NotApprovedForMarketplace();
+            }
         }
+        
         s_listings[nftAddress][tokenId] = Listing(price, msg.sender, _isPhysicalItem, Status.AWAITING_PURCHASER);
         emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
