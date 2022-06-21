@@ -114,7 +114,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
                 revert NotApprovedForMarketplace();
             }
         }
-        
+
         s_listings[nftAddress][tokenId] = Listing(price, msg.sender, _isPhysicalItem, Status.AWAITING_PURCHASER);
         emit ItemListed(msg.sender, nftAddress, tokenId, price);
     }
@@ -163,7 +163,7 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
             listedItem.currStatus = Status.AWAITING_DELIVERY;
             address _seller = listedItem.seller;
 
-            escrowDebt[_owner][_tokenId] = escrowRecords(_nftAddress, _tokenId, msg.sender, _seller, msg.value);
+            escrowDebt[_nftAddress][_tokenId] = escrowRecords(_nftAddress, _tokenId, msg.sender, _seller, msg.value);
             // as function is set payable i should not need the below line
             // address(this) += msg.value;
             IERC721(_nftAddress).safeTransferFrom(listedItem.seller, address(this), _tokenId);
@@ -180,9 +180,14 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
     function confirmDelivery(address _nftAddress, uint256 _tokenId) 
         external
         nonReentrant
-    {
+    {   
+        // ensure only the purchaser can confirm delivery
+        escrowRecords memory records = escrowDebt[_nftAddress][_tokenId];
+        require(msg.sender == records.purchaser, "Only the purchaser can call this function");
+
+        // Ensure the status of the listing is awaiting delivery i.e. the item + payment funds are in escrow
         Listing memory listing = s_listings[_nftAddress][_tokenId];
-        require(listing.currStatus == Status.AWAITING_PURCHASER);
+        require(listing.currStatus == Status.AWAITING_DELIVERY);
 
         if (listing.price <= 0) {
             revert NotListed(_nftAddress, _tokenId);
