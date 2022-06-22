@@ -108,6 +108,8 @@ contract NftMarketplace is ReentrancyGuard, IERC721Receiver {
         if (price <= 0) {
             revert PriceMustBeAboveZero();
         }
+
+        // internal scoping to work arounf Stack Too Deep error
         {
             IERC721 nft = IERC721(nftAddress);
             if (nft.getApproved(tokenId) != address(this)) {
